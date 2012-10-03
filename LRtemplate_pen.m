@@ -3,16 +3,22 @@ clear all;
 close all;
 
 %% load data
-load('spiral1_test.mat');
-load('spiral1_train.mat');
+% load('spiral1_test.mat');
+% load('spiral1_train.mat');
+
+% load('spiral2_test.mat');
+% load('spiral2_train.mat');
+
+load('mnist_test.mat');
+load('mnist_train.mat');
 [n,m] = size(inputs_train);
 
 %learning rate
-parameters.learning_rate = 0.001
+parameters.learning_rate = 0.01
 %weight regularization parameter
-parameters.weight_regularization = 0.5
+parameters.weight_regularization = 0.2
 %number of iterations
-parameters.num_iterations = 200
+parameters.num_iterations = 500
 %logistics regression weights
 weights = -ones(n+1, 1);
 % weights = -rand(n+1, 1);
@@ -29,13 +35,17 @@ diff = checkgrad('logistic', ...
     rand(nexamples, 1), ... % targets
     parameters)
 
+if(diff > 1e-007)
+	error('Grad check failed');
+end
+	
 % begin learning with gradient descent
 for t = 1:parameters.num_iterations
 	% find the negative log likelihood and derivative w.r.t. weights
-	[f, df, frac_correct_train] = logistic(weights, inputs_train', target_train(1,:)', parameters);
+	[f, df, frac_correct_train] = logistic_pen(weights, inputs_train', target_train(1,:)', parameters);
 
 	% find the fraction of correctly classified validation examples
-	[temp, temp2, frac_correct_valid] = logistic(weights, inputs_test', target_test(1,:)', parameters);
+	[temp, temp2, frac_correct_valid] = logistic_pen(weights, inputs_test', target_test(1,:)', parameters);
 
 	%
     if isnan(f) || isinf(f)

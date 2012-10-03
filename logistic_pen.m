@@ -10,7 +10,7 @@
 %	df - (M+1) by 1 vector of derivatives
 %	frac_correct - fraction of correctly classified examples
 %%%%
-function [f, df, frac_correct] = logistic(weights, data, targets, parameters)
+function [f, df, frac_correct] = logistic_pen(weights, data, targets, parameters)
 
 %get the dimention of the output
 [n,m] = size(targets);
@@ -26,7 +26,11 @@ f = -sum(targets .* log(p) + (1 - targets) .* log(1 - p));
 
 %compute the derivative
 for k = 1:size(weights)
-	df(k,1) = sum((p-targets) .* data(:, k));
+	if(k == 1)
+		df(k,1) = sum((p-targets) .* data(:, k));
+	else
+		df(k,1) = sum((p-targets) .* data(:, k)) - parameters.weight_regularization * weights(k);
+	end
 end
 
 %compute the correctly predicted output
